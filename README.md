@@ -1,16 +1,7 @@
 # boo_replica
 
-A new Flutter project.
+A replica of the Boo app's UI using Flutter.
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Main points:
+1. Some smoke-and-mirrors were definitely involved, like the AppBar being transparent and with its height and the TabBar's height being changed by the state. I would've used a CustomScrollView with SliverAppBars, but this time the ScrollView is inside a PageView.
+2. I haven't done the 16 Types/Cognitive Functions/Zodiac section completely because of the data required.
