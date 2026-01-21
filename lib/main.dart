@@ -5,8 +5,6 @@ import 'package:flutter/material.dart';
 import 'mock_profile.dart';
 import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 
-import 'dart:developer' as dev;
-
 void main() {
   runApp(const MyApp());
 }
@@ -75,7 +73,6 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   }
 
   bool _handleCardSwipe(int prev, int? current, CardSwiperDirection direction) {
-    dev.log("animation end");
     _setAppBarCollapsePercent(0);
 
     return true;
