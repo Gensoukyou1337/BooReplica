@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'mock_profile.dart';
 import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 
+import 'dart:developer' as dev;
+
 void main() {
   runApp(const MyApp());
 }
@@ -72,17 +74,26 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     }
   }
 
+  bool _handleCardSwipe(int prev, int? current, CardSwiperDirection direction) {
+    dev.log("animation end");
+    _setAppBarCollapsePercent(0);
+
+    return true;
+  }
+
   @override
   void initState() {
     pageViewTopTabsController = TabController(length: 2, vsync: this);
     pageViewTopTabsController.addListener(_handleTabSelection);
     profileCards = [
       ProfileWidget(
+        key: ObjectKey(0),
         profileObject: getMockProfile(),
         onAppBarCollapsePercentageChanged: _setAppBarCollapsePercent,
       ),
       ProfileWidget(
-        profileObject: getMockProfile(),
+        key: ObjectKey(1),
+        profileObject: getMockProfile2(),
         onAppBarCollapsePercentageChanged: _setAppBarCollapsePercent,
       )
     ];
@@ -98,6 +109,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
               controller: swiperController,
               allowedSwipeDirection: AllowedSwipeDirection.symmetric(horizontal: true),
               cardsCount: 2,
+              onSwipe: _handleCardSwipe,
               cardBuilder: (context, index, percentThresholdX, percentThresholdY) => profileCards[index],
             )
           ),
@@ -161,32 +173,6 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       child: Scaffold(
         extendBody: true,
         extendBodyBehindAppBar: true,
-        /*
-        appBar: PreferredSize(
-          preferredSize: Size(double.infinity, 112),
-          child: ClipRect(
-            child: BackdropFilter(
-              filter: commonBlurFilter,
-              child: AppBar(
-                toolbarHeight: 56.0,
-                backgroundColor: Colors.orange.withAlpha(256),
-                elevation: 0.0,
-                centerTitle: true,
-                title: Text(widget.title),
-                leading: Row(children: [Icon(Icons.menu), Icon(Icons.battery_6_bar)]),
-                actions: [
-                  Icon(Icons.transcribe),
-                  Icon(Icons.menu_book)
-                ],
-                flexibleSpace: Container(
-                  height: 56.0 * (100.0-appBarCollapsePercent)/100.0,
-                  color: Colors.orange.withAlpha(256),
-                ),
-              ),
-            )
-          )
-        ),
-        */
         appBar: PreferredSize(
           preferredSize: Size(double.infinity, 112),
           child: AppBar(
