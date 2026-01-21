@@ -14,7 +14,7 @@ Profile getMockProfile() {
       interestsTags: ["music", "gaming"],
       languages: ["English"],
       photoUrls: ["", "", ""],
-      prompts: ["I can give you something you want, you just have to ask"],
+      prompts: [Prompt(title: "I can give you what you want.", content: "You just need to ask.")],
       sixteenType: "INTP",
       sortedCogFunctions: ["Fi"],
       zodiac: "Taurus"

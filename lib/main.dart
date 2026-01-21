@@ -1,4 +1,7 @@
+import 'dart:developer' as dev;
+
 import 'package:boo_replica/bottom_bar.dart';
+import 'package:boo_replica/components.dart';
 import 'package:boo_replica/profile_widget.dart';
 import 'package:flutter/material.dart';
 import 'mock_profile.dart';
@@ -19,6 +22,11 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         // This is the theme of your application.
         colorScheme: .fromSeed(seedColor: Colors.deepPurple),
+        textTheme: .new(
+          titleLarge: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          titleSmall: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+          bodySmall: TextStyle(fontSize: 11, fontWeight: FontWeight.normal)
+        )
       ),
       home: const MyHomePage(title: 'Boo Replica'),
     );
@@ -43,26 +51,105 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMixin {
+  double appBarCollapsePercent = 0.0;
 
-  void _incrementCounter() {
+  void _setAppBarCollapsePercent(double percent) {
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+      appBarCollapsePercent = percent;
     });
   }
 
-  List<ProfileWidget> profileCards = [
-    ProfileWidget(profileObject: getMockProfile()),
-    ProfileWidget(profileObject: getMockProfile())
-  ];
-
+  List<Widget> pages = [];
+  List<ProfileWidget> profileCards = [];
   CardSwiperController swiperController = CardSwiperController();
+  late PageController pageViewController;
+  late TabController pageViewTopTabsController;
+
+  void _handleTabSelection() {
+    if (pageViewTopTabsController.indexIsChanging) {
+      setState(() {
+        pageViewController.animateToPage(pageViewTopTabsController.index, duration: Durations.short4, curve: Curves.linear);
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    pageViewTopTabsController = TabController(length: 2, vsync: this);
+    pageViewTopTabsController.addListener(_handleTabSelection);
+    profileCards = [
+      ProfileWidget(
+        profileObject: getMockProfile(),
+        onAppBarCollapsePercentageChanged: _setAppBarCollapsePercent,
+      ),
+      ProfileWidget(
+        profileObject: getMockProfile(),
+        onAppBarCollapsePercentageChanged: _setAppBarCollapsePercent,
+      )
+    ];
+    pageViewController = PageController();
+    pages = [
+      Stack(
+        alignment: .bottomCenter,
+        children: [
+          Center(
+            child: CardSwiper(
+              padding: EdgeInsetsGeometry.all(0),
+              isDisabled: true,
+              controller: swiperController,
+              allowedSwipeDirection: AllowedSwipeDirection.symmetric(horizontal: true),
+              cardsCount: 2,
+              cardBuilder: (context, index, percentThresholdX, percentThresholdY) => profileCards[index],
+            )
+          ),
+          Container(
+            height: 56.0,
+            alignment: .bottomCenter,
+            margin: EdgeInsets.only(bottom: 56.0),
+            child: Row(
+              children: [
+                BottomBarCircularContainer(child: IconButton(
+                  onPressed: () {},
+                  icon: Icon(Icons.rocket, color: Colors.blueAccent),
+                )),
+                BottomBarCircularContainer(child: IconButton(
+                  onPressed: () {swiperController.swipe(.left);},
+                  icon: Icon(Icons.cancel, color: Colors.redAccent),
+                )),
+                BottomBarCircularContainer(child: IconButton(
+                  onPressed: () {},
+                  icon: Icon(Icons.heart_broken, color: Colors.redAccent),
+                )),
+                BottomBarCircularContainer(child: IconButton(
+                  onPressed: () {swiperController.swipe(.right);},
+                  icon: Icon(Icons.heart_broken, color: Colors.blueAccent),
+                )),
+                BottomBarCircularContainer(child: IconButton(
+                  onPressed: () {},
+                  icon: Icon(Icons.send, color: Colors.blueAccent),
+                )),
+              ]
+            ),
+          )
+        ],
+      ),
+      Container(
+        decoration: BoxDecoration(
+          color: Colors.blue,
+        ),
+        child: Center(child: Text("SECTION UNDER DEVELOPMENT"))
+      )
+    ];
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    pageViewTopTabsController.dispose();
+    pageViewController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -74,31 +161,71 @@ class _MyHomePageState extends State<MyHomePage> {
     // than having to individually change instances of widgets.
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          centerTitle: true,
-          // Here we take the value from the MyHomePage object that was created by
-          // the App.build method, and use it to set our appbar title.
-          title: Text(widget.title),
-          leading: Row(children: [Icon(Icons.menu), Icon(Icons.battery_6_bar)]),
-          actions: [
-            Icon(Icons.transcribe),
-            Icon(Icons.menu_book)
-          ],
-        ),
-        body: Center(
-          child: CardSwiper(
-            isDisabled: true,
-            controller: swiperController,
-            allowedSwipeDirection: AllowedSwipeDirection.symmetric(horizontal: true),
-            cardsCount: 2,
-            cardBuilder: (context, index, percentThresholdX, percentThresholdY) => profileCards[index],
+        extendBody: true,
+        extendBodyBehindAppBar: true,
+        /*
+        appBar: PreferredSize(
+          preferredSize: Size(double.infinity, 112),
+          child: ClipRect(
+            child: BackdropFilter(
+              filter: commonBlurFilter,
+              child: AppBar(
+                toolbarHeight: 56.0,
+                backgroundColor: Colors.orange.withAlpha(256),
+                elevation: 0.0,
+                centerTitle: true,
+                title: Text(widget.title),
+                leading: Row(children: [Icon(Icons.menu), Icon(Icons.battery_6_bar)]),
+                actions: [
+                  Icon(Icons.transcribe),
+                  Icon(Icons.menu_book)
+                ],
+                flexibleSpace: Container(
+                  height: 56.0 * (100.0-appBarCollapsePercent)/100.0,
+                  color: Colors.orange.withAlpha(256),
+                ),
+              ),
+            )
           )
         ),
-        bottomNavigationBar: BottomBar(
-          onXClicked: () => {swiperController.swipe(CardSwiperDirection.left)},
-          onHeartClicked: () => {swiperController.swipe(CardSwiperDirection.right)},
+        */
+        appBar: PreferredSize(
+          preferredSize: Size(double.infinity, 112),
+          child: AppBar(
+                backgroundColor: Colors.transparent,
+                elevation: 0.0,
+                flexibleSpace: Column (
+                  children: [
+                    ClipRect(
+                      child: BackdropFilter(
+                        filter: commonBlurFilter,
+                        child: Padding(
+                          padding: .symmetric(horizontal: 16),
+                          child: Row(
+                            children: [
+                              Row(children: [Icon(Icons.menu), SizedBox(width: 16, height: 56), Icon(Icons.battery_6_bar)]),
+                              Expanded(child: Text(widget.title, textAlign: .center, style: Theme.of(context).textTheme.titleLarge)),
+                              Row(children: [Icon(Icons.transcribe), SizedBox(width: 16, height: 56), Icon(Icons.menu_book)]),
+                            ]
+                          )
+                        )
+                      ),
+                    ),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 56.0 * (100.0-appBarCollapsePercent)/100.0,
+                      child: TabBar(tabs: [Tab(text: "New Soul"), Tab(text: "Discover")], controller: pageViewTopTabsController),
+                    )
+                  ],
+                ),
+              )
         ),
+        body: PageView(
+          physics: NeverScrollableScrollPhysics(),
+          controller: pageViewController,
+          children: pages,
+        ),
+        bottomNavigationBar: BottomBar(),
       )
     );
   }

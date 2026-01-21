@@ -27,7 +27,7 @@ class ProfileDetails {
   List<String>? interestsTags;
   List<String>? languages;
   List<String>? photoUrls;
-  List<String>? prompts;
+  List<Prompt>? prompts;
   String? sixteenType;
   List<String>? sortedCogFunctions;
   String? zodiac;
@@ -56,4 +56,11 @@ class Comments {
   List<String>? commentsStrings;
 
   Comments({this.commentsStrings});
+}
+
+class Prompt {
+  String? title;
+  String? content;
+
+  Prompt({this.title, this.content});
 }
