@@ -289,12 +289,110 @@ class ProfileDetailsWidget extends StatelessWidget {
           height: 16
         ),
         ..._photosAndPrompts,
-        Container(
-          margin: EdgeInsets.symmetric(horizontal: 16),
-          decoration: commonBoxDecor,
-          height: 64,
+        PersonalityParamsWidget(
+          sixteenType: profileDetails?.sixteenType,
+          cognitiveFunctions: profileDetails?.sortedCogFunctions?.join(),
+          zodiac: profileDetails?.zodiac,
         ),
       ],
+    );
+  }
+}
+
+class PersonalityParamsWidget extends StatefulWidget {
+  final String? sixteenType;
+  final String? cognitiveFunctions;
+  final String? zodiac;
+
+  const PersonalityParamsWidget({super.key, this.sixteenType, this.cognitiveFunctions, this.zodiac});
+
+  @override
+  State<StatefulWidget> createState() => _PersonalityParamsWidgetState();
+}
+
+class _PersonalityParamsWidgetState extends State<PersonalityParamsWidget> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+  late PageController _pageController;
+
+  List<Tab> tabs = [
+    Tab(text: "16 Type"),
+    Tab(text: "Cognitive Functions"),
+    Tab(text: "Zodiac"),
+  ];
+
+  List<Widget> pages = [];
+
+  void _handleTabSelection() {
+    if (_tabController.indexIsChanging) {
+      setState(() {
+        _pageController.animateToPage(_tabController.index, duration: Durations.short4, curve: Curves.linear);
+      });
+    }
+  }
+
+  void _buildPages(BuildContext context) {
+    if (pages.isNotEmpty) {return;}
+
+    pages = [
+      Column(
+        children: [
+          Text(widget.sixteenType ?? "", style: Theme.of(context).textTheme.titleMedium),
+          Text("Long text")
+        ],
+      ),
+      Column(
+        children: [
+          Text(widget.cognitiveFunctions ?? "", style: Theme.of(context).textTheme.titleMedium),
+          Text("Long text")
+        ],
+      ),
+      Column(
+        children: [
+          Text(widget.zodiac ?? "", style: Theme.of(context).textTheme.titleMedium),
+          Text("Longer text")
+        ],
+      )
+    ];
+  }
+
+  @override
+  void initState() {
+    _tabController = TabController(length: 3, vsync: this);
+    _tabController.addListener(_handleTabSelection);
+    _pageController = PageController();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    _buildPages(context);
+
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 16),
+      decoration: commonBoxDecor,
+      child: Padding(
+        padding: EdgeInsetsGeometry.all(16),
+        child: Column(
+          children: [
+            TabBar(tabs: tabs, controller: _tabController),
+            SizedBox(
+              width: double.infinity,
+              height: 256,
+              child: PageView(
+                controller: _pageController,
+                children: pages,
+              ),
+            )
+          ],
+        ),
+      ),
     );
   }
 }
