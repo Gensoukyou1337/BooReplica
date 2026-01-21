@@ -9,42 +9,38 @@ class BottomBar extends StatelessWidget {
     return SizedBox(
         height: 56,
         width: 320,
-        child: Column(
-          children:[
-            ClipRect(
-              child: BackdropFilter(
-                filter: commonBlurFilter,
-                child: Row(
+        child: ClipRect(
+          child: BackdropFilter(
+            filter: commonBlurFilter,
+            child: Row(
+              children: [
+                Expanded(child: Column(
                   children: [
-                    Expanded(child: Column(
-                      children: [
-                        Icon(Icons.heart_broken),
-                        Text("Match")
-                      ]
-                    )),
-                    Expanded(child: Column(
-                      children: [
-                        Icon(Icons.create),
-                        Text("Create")
-                      ]
-                    )),
-                    Expanded(child: Column(
-                      children: [
-                        Icon(Icons.network_cell),
-                        Text("Universes")
-                      ]
-                    )),
-                    Expanded(child: Column(
-                      children: [
-                        Icon(Icons.message),
-                        Text("Messages")
-                      ]
-                    )),
+                    Icon(Icons.heart_broken),
+                    Text("Match")
                   ]
-                )
-              ),
+                )),
+                Expanded(child: Column(
+                  children: [
+                    Icon(Icons.create),
+                    Text("Create")
+                  ]
+                )),
+                Expanded(child: Column(
+                  children: [
+                    Icon(Icons.network_cell),
+                    Text("Universes")
+                  ]
+                )),
+                Expanded(child: Column(
+                  children: [
+                    Icon(Icons.message),
+                    Text("Messages")
+                  ]
+                )),
+              ]
             )
-          ]
+          ),
         ),
       );
   }
