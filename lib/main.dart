@@ -1,5 +1,3 @@
-import 'dart:developer' as dev;
-
 import 'package:boo_replica/bottom_bar.dart';
 import 'package:boo_replica/components.dart';
 import 'package:boo_replica/profile_widget.dart';
